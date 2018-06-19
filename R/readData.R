@@ -1,6 +1,6 @@
 
 
-
+#' @importFrom readxl read_excel
 readExcelData <- function(filein, sheet, header = NULL, get_subset = TRUE, ign_first_head = "") {
     
     # Avoid reading column header (in first row) in order to have conform input
@@ -79,7 +79,7 @@ readExcelData <- function(filein, sheet, header = NULL, get_subset = TRUE, ign_f
 }
 
 
-
+#' @importFrom readxl excel_sheets
 readExcel <- function(filein, sheet = NULL) {
     
     
@@ -92,7 +92,7 @@ readExcel <- function(filein, sheet = NULL) {
     
     # If no sheet was specified, extract them and try to find tables.
     if (is.null(sheet)) 
-        ls_sheets <- excel_sheets(filein$datapath)
+        ls_sheets <- readxl::excel_sheets(filein$datapath)
     else 
         ls_sheets <- list(sheet)
     

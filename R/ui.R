@@ -1,33 +1,26 @@
-
-
+# This is the main UI file that defines the two types of interfaces: 
+#  1. uiFull : running on a server with multiple data sets.
+#  2. uiSimple : running  locally on a single data set (a.k.a. 'ExcelMode') 
 #
-# Define the Shiny dashboard header
-#
-dbHeader <- shinydashboard::dashboardHeader(title = "GWSDAT.beta",
-                            tags$li(a(href = 'http://www.api.org/oil-and-natural-gas/environment/clean-water/ground-water/gwsdat',
-                                      icon("home"),
-                                      title = "GWSDAT Homepage"),
-                                    class = "dropdown"))
-                  
-                            # Not using the image because can't get the resource to load:
-                            # tags$li(class = "dropdown", 
-                            #         tags$a(href = 'http://www.api.org/oil-and-natural-gas/environment/clean-water/ground-water/gwsdat',
-                            #           target = '_blank',
-                            #           tags$img(src = "extdata/gwsdat_logo.png", 
-                            #                    title = "GWSDAT Homepage", height = "40px"),
-                            #                    style = "padding-top:5px; padding-bottom:5px;")
-                            #         ))
 
 
 
 
-uiFull <- shinydashboard::dashboardPage(skin = "black",
+
+
+dbHeaderFull <- function() shinydashboard::dashboardHeader(title = "GWSDAT Beta", 
+                                                shinydashboard::dropdownMenuOutput("welcomeMsg"), 
+                                                shinydashboard::dropdownMenuOutput("logAction"),
+                                                shinydashboard::dropdownMenuOutput("signupAction"))
+
+
+uiFull <- function() shinydashboard::dashboardPage(skin = "black",
   
-  dbHeader, 
+  dbHeaderFull(), 
   shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(id = "sidebar_menu",
       shinydashboard::menuItem("Manage Data", tabName = "menu_data_manager", icon = icon("archive")),
       shinydashboard::menuItem("Analyse", tabName = "menu_analyse", icon = icon("bar-chart")),
-      shinydashboard::menuItem("Version", tabName = "menu_version")
+      shinydashboard::menuItem("Log and Jobs", tabName = "logs_jobs", icon = icon("wpforms"))
     )
   ),
   
@@ -36,10 +29,11 @@ uiFull <- shinydashboard::dashboardPage(skin = "black",
     
     # Not using includeScript because it wraps <script> tags
     # around which doesn't work with the GA js directives.
-    tags$head(includeHTML("inst/www/google-analytics.js")),
+    #tags$head(includeHTML("inst/www/google-analytics.js")),
+    tags$head(includeHTML(system.file("www/google-analytics.js", package="GWSDAT"))),
     
     # Load .js Code that jumps from trend table to time-series table.
-    tags$head(includeScript("inst/www/jump_to_tsplot.js")),
+    tags$head(includeScript(system.file("inst/www/jump_to_tsplot.js", package="GWSDAT"))),
     
     # Makes the sidebar minimize to icons only.
     tags$script(HTML("$('body').addClass('sidebar-mini');")),
@@ -72,8 +66,8 @@ uiFull <- shinydashboard::dashboardPage(skin = "black",
               )
       ),
      
-      shinydashboard::tabItem(tabName = "menu_version",
-                             verbatimTextOutput("version_info")
+      shinydashboard::tabItem(tabName = "logs_jobs",
+                              uiOutput("uiLogsJobs")
       )
       
     ) # end tabItems
@@ -81,12 +75,21 @@ uiFull <- shinydashboard::dashboardPage(skin = "black",
 ) # end ui
 
 
-uiSimple <- shinydashboard::dashboardPage(skin = "black",
 
-  dbHeader, 
+# Define the Shiny dashboard header
+dbHeaderSimple <- function() shinydashboard::dashboardHeader(title = "GWSDAT.beta",
+    tags$li(a(href = 'http://www.api.org/oil-and-natural-gas/environment/clean-water/ground-water/gwsdat',
+              icon("home"), title = "GWSDAT Homepage"), class = "dropdown")
+)
+
+
+
+uiSimple <- function() shinydashboard::dashboardPage(skin = "black",
+
+  dbHeaderSimple(), 
   shinydashboard::dashboardSidebar(shinydashboard::sidebarMenu(
     shinydashboard::menuItem("Analyse", tabName = "analysis", icon = icon("bar-chart")),
-    shinydashboard::menuItem("Version", tabName = "menu_version")
+    shinydashboard::menuItem("Logs and Jobs", tabName = "logs_jobs", icon = icon("wpforms"))
     ),
     collapsed = TRUE
   ),
@@ -97,9 +100,61 @@ uiSimple <- shinydashboard::dashboardPage(skin = "black",
                       shiny::singleton(tags$head(tags$link(href = system.file("www", "trafficlight.css", package = "GWSDAT"), rel = "stylesheet"))),
                       shinydashboard::tabItems( 
                         shinydashboard::tabItem(tabName = "analysis", uiOutput("rndAnalyse")),
-                        shinydashboard::tabItem(tabName = "menu_version", verbatimTextOutput("version_info"))
+                        shinydashboard::tabItem(tabName = "logs_jobs", uiOutput("uiLogsJobs"))
                       )
                       
   ) # end dashboardBody 
 ) # end ui
+
+
+
+#
+# Note: The following two functions (uiLoginModal and uiLoginSignup) where originally placed in the file uiLogin.R. There were moved here to bypass the following CRAN Note (using R CMD check --as-cran <GWSDAT_X.X.X.tar.gz>):
+#
+# * checking R code for possible problems ... NOTE
+# server: no visible global function definition for ‘uiLoginModal’
+# server: no visible global function definition for ‘uiLoginSignup’
+# Undefined global functions or variables:
+#  uiLoginModal uiLoginSignup
+#
+# As the message says, they are called from server() but they can't be seen.
+# Other ui functions are handled in the same way but can be seen in their respective ui*.R files. It is not clear why this happens. Please move these functions to an appropriate script file when this is resolved.
+#
+
+
+
+uiLoginModal <- function() {
+  return(shiny::modalDialog(
+    
+    h3('Login'),
+    
+    textInput("login_email", "Email:"),    
+    passwordInput("login_password", "Password:"),
+    div(style = 'color: red; margin-bottom: 5px', textOutput('wrongPasswordMsg1')),  
+    actionButton("doLogin", "Login", icon = icon("sign-in")),
+   
+    footer = tagList(
+      actionButton("cancelLogin", "Cancel")
+    )
+  ))
+}
+
+uiSignupModal <- function() {
+    return(modalDialog(
+
+    h3('Sign-up'),
+  
+    div(style = "margin-top: 25px; margin-bottom: 25px", 'If not already registered, sign-up by specifying an e-mail and password.'),
+    textInput("signup_email", "Email:"),    
+    passwordInput("signup_password", "Password:"),
+    passwordInput("signup_password2", "Repeat password:"),
+    div(style = 'color: red; margin-bottom: 5px', textOutput('wrongPasswordMsg2')),  
+    actionButton("doSignup","Sign up", icon = icon("user-plus")),
+    
+    
+    footer = tagList(
+      actionButton("cancelSignup", "Cancel")
+    )
+  ))
+}
 

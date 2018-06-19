@@ -47,10 +47,6 @@ plotTimeSeries <- function(csite,
   #if (csite$ui_attr$trend_thresh_selected == "Trend") { Stat.Lim = NA }
   if (!show_thresh) { Stat.Lim = NA }
   
-  #
-  #
-  # change this: "GWFlows" %in% names(attributes(csite$Fitted.Data))
-  #
   GWAxis <- csite$ui_attr$ts_options["Overlay GW levels"] && !is.null(csite$GW.Flows) && 
     any(as.character(csite$All.Data$GW.Data$WellName) == location)
   NAPLAxis <- (show_napl_thickness && NAPL.Present)
@@ -388,7 +384,12 @@ plotTimeSeries <- function(csite,
 # }
 
 
-makeTimeSeriesPPT <- function(csite, substance, location, width = 600, height = 400){
+makeTimeSeriesPPT <- function(csite, fileout, substance, location, width = 600, height = 400){
+  
+  # Initialize Powerpoint file.
+  if (is.null(ppt_pres <- initPPT())) {
+    return(NULL)
+  }
   
   # Create temporary wmf file. 
   mytemp <- tempfile(fileext = ".png")
@@ -397,15 +398,9 @@ makeTimeSeriesPPT <- function(csite, substance, location, width = 600, height = 
   plotTimeSeries(csite, substance, location)
   dev.off()
   
+  ppt_pres <- addPlotPPT(mytemp, ppt_pres, width, height) 
   
-  # Put into powerpoint slide.
-  if (is.null(ppt_lst <- initPPT())) {
-    # showNotification("Unable to initialize Powerpoint: package RDCOMClient might not be installed.", type = "error", duration = 10)
-    return(NULL)
-  }
-  
-  addPlotPPT(mytemp, ppt_lst, width, height) 
-  
+  print(ppt_pres, target = fileout) %>% invisible()
   
   try(file.remove(mytemp))
   

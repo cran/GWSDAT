@@ -47,12 +47,13 @@ uiSpatialImage <- function(csite, img_frmt) {
                       if (existsPPT()) {
                         div(id = "save_spatial_ppt_anim", style = "display: inline-block; vertical-align:top; margin-top: 25px;",
                             
-                            actionButton("generate_spatial_anim_ppt", 
-                                         label = "Generate PPT Animation", icon = icon("file-movie-o"))
+                            downloadButton("generate_spatial_anim_ppt", label = "Generate PPT Animation", icon = icon("file-movie-o"))
+                            #actionButton("generate_spatial_anim_ppt", label = "Generate PPT Animation", icon = icon("file-movie-o"))
                         ) }
                         
                       #)
     ),
+    # This draggable panel contains the time slider for the spatial heatmap plot.s
     absolutePanel(id = "timecontrol_sp", class = "panel panel-default", 
                 fixed = TRUE, draggable = TRUE, top = "auto", 
                 left = "auto", right = 20, bottom = 20,

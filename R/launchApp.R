@@ -19,12 +19,13 @@ options(warn = 1)
 #'   
 #' @export
 #' 
-#' @import stats grDevices graphics MASS shiny shinycssloaders geometry zoo readxl rhandsontable sf
+#' @import stats grDevices graphics MASS shiny shinycssloaders geometry zoo rhandsontable sf
 #' @importFrom shinyjs show hide delay onclick useShinyjs
 #' @importFrom utils sessionInfo write.csv packageVersion
+#' @importFrom readxl excel_sheets
 #' 
 #' @examples 
-#' \dontrun{
+#' if(interactive()) {
 #' launchApp(session_file = "path_to_GWSDAT_session.rds") # launch in single data mode.
 #' launchApp()  # launch in multi data mode
 #' }
@@ -36,13 +37,12 @@ launchApp <- function(GWSDAT_Options, session_file) {
   # The index.html will look fine. did put shinyjs::useShinyjs() into the the 
   # start of the ui() function where it belongs on default.
   shinyjs::useShinyjs()
-  
-  
+ 
   if (missing(GWSDAT_Options) && missing(session_file)) {
     
     .GlobalEnv$APP_RUN_MODE <- "MultiData"
     
-    shinyApp(ui = uiFull, server = server)
+    shinyApp(ui = uiFull(), server = server)
     
   } else {
     
@@ -57,7 +57,7 @@ launchApp <- function(GWSDAT_Options, session_file) {
     
     options(shiny.launch.browser = TRUE)
     
-    shinyApp(ui = uiSimple, server = server)
+    shinyApp(ui = uiSimple(), server = server)
   }
   
 }

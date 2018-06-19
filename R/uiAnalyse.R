@@ -1,7 +1,5 @@
 
 
-# Gives conflict with graphics::box:
-# #' @importFrom shinydashboard box 
 uiAnalyse <- function(csite, img_frmt, APP_RUN_MODE) {
   
   corner_element = paste0(csite$ui_attr$site_name, " - ", csite$Aquifer)
@@ -9,8 +7,7 @@ uiAnalyse <- function(csite, img_frmt, APP_RUN_MODE) {
   # If in MultiData mode, include a BACK button.
   if (APP_RUN_MODE == "MultiData")
     corner_element <- HTML(paste0(actionButton("GoToDataSelect", "", icon = icon("arrow-left"), style = "height: 30px"), "&nbsp;&nbsp;&nbsp", csite$ui_attr$site_name, " - ", csite$Aquifer)) 
-  
-  
+    
   
   # tags$a(id = "GoToDataSelect", "<- Back", href = "#"), " ", csite$ui_attr$site_name)) 
   navbarPage(corner_element, windowTitle = csite$ui_attr$site_name, id = "analyse_panel",              
