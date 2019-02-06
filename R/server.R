@@ -1,13 +1,11 @@
 
 
 
-
 server <- function(input, output, session) {
   
   time.log <- ''
   
   DEBUG_MODE <- FALSE
-
  
   # Increase upload file size to 30MB (default: 5MB)
   options(shiny.maxRequestSize = 30*1024^2)
@@ -21,6 +19,10 @@ server <- function(input, output, session) {
   if (!exists("APP_RUN_MODE", envir = .GlobalEnv)) 
     APP_RUN_MODE <- "MultiData"
   
+  # This is set inside launchApp()
+  if (!exists("APP_LOGIN_MODE", envir = .GlobalEnv)) 
+    APP_LOGIN_MODE <- FALSE
+
   # This is set inside launchApp()
   if (!exists("session_file", envir = .GlobalEnv)) {
     session_file <- NULL
@@ -384,8 +386,6 @@ server <- function(input, output, session) {
   #fitPSplineChecker <- reactive({
   observe({
     
-    cat("** in fitPSplineChecker()\n")
-    
     if (BP_method != 'simple')
       return()
     
@@ -403,8 +403,8 @@ server <- function(input, output, session) {
     invalidateLater(2000)
     
     if (!file.exists(BP_modelfit_outfile)) {
-      app_log(paste0(alog, '[PSpline] Fitting in progress.\n'))
-      return(TRUE)
+        app_log(paste0(alog, '[PSpline] Fitting in progress.\n'))
+        return(TRUE)
     }
     
     # Only pass the file name. The data_id is saved inside this file, which is read by evalJobPspline.
@@ -413,7 +413,8 @@ server <- function(input, output, session) {
     showNotification("P-Spline fit completed successfully.", type = "message", duration = 7)
     
     BP_modelfit_running(FALSE)
-    
+
+    cat("** end of fitPSplineChecker()\n")
     
     # 
     # OLD_Version <- FALSE
@@ -722,31 +723,44 @@ server <- function(input, output, session) {
   #  
   # Update the label of the time slider, when slider changes.
   #
-  observeEvent(input$timepoint_sp_idx, {
-    cat("* in observeEvent: timepoint_sp_idx\n")
-   
-    # Retrieve date and convert to the aggregation time interval. 
+#  observeEvent(input$timepoint_sp_idx, {
+#       
+#    # Retrieve date and convert to the aggregation time interval. 
+#    timep <- csite$ui_attr$timepoints[input$timepoint_sp_idx]
+#    outp <- pasteAggLimit(timep, csite$GWSDAT_Options$Aggby)
+        
+# #   updateSliderInput(session, "timepoint_sp_idx", label = paste0("Time: ", outp))
+#  })
+    
+ output$timepoint_sp_idx_label <- renderText({
     timep <- csite$ui_attr$timepoints[input$timepoint_sp_idx]
     outp <- pasteAggLimit(timep, csite$GWSDAT_Options$Aggby)
-    
-    updateSliderInput(session, "timepoint_sp_idx", label = paste0("Time: ", outp))
-  })
+    paste0("Time: ", outp)
+ })
 
-  observeEvent(input$timepoint_tt_idx, {
-    # cat("* in observeEvent: timepoint_tt_idx\n")
-    
-    # Not updating here, because 'input$timepoint_sp_idx' is directly used for
-    # plotting. Saving to 'csite$ui_attr$timepoint_sp_idx' is only used in 
-    # 'Save Session' and reading from it inside rndAnalyse <- renderUI().
-    #
-    #csite$ui_attr$timepoint_tt_idx <<- input$timepoint_tt_idx
-    
-    timep <- csite$ui_attr$timepoints[input$timepoint_tt_idx]
-    outp <- pasteAggLimit(timep, csite$GWSDAT_Options$Aggby)
-    updateSliderInput(session, "timepoint_tt_idx", label = paste0("Time: ", outp))
-  })
+ # observeEvent(input$timepoint_tt_idx, {
+ #   # cat("* in observeEvent: timepoint_tt_idx\n")
+ #   
+ #   # Not updating here, because 'input$timepoint_sp_idx' is directly used for
+ #   # plotting. Saving to 'csite$ui_attr$timepoint_sp_idx' is only used in 
+ #   # 'Save Session' and reading from it inside rndAnalyse <- renderUI().
+ #   #
+ #   #csite$ui_attr$timepoint_tt_idx <<- input$timepoint_tt_idx
+ #   
+ #   timep <- csite$ui_attr$timepoints[input$timepoint_tt_idx]
+ #   outp <- pasteAggLimit(timep, csite$GWSDAT_Options$Aggby)
+ #   update
+#    updateSliderInput(session, "timepoint_tt_idx", label = paste0("Time: ", outp))
+ # })
   
 
+    output$timepoint_tt_idx_label = renderText( {
+        timep <- csite$ui_attr$timepoints[input$timepoint_tt_idx]
+        outp <- pasteAggLimit(timep, csite$GWSDAT_Options$Aggby)
+        paste0("Time: ", outp)
+    })
+ 
+    
   #
   # Plot ImagePlot
   #
@@ -1187,14 +1201,9 @@ server <- function(input, output, session) {
         saveRDS(csite_list, file = file)
       }
     }
-    
   )
   
-  
-  
-  
-  
-  
+    
   
   # Generate PPT with spatial animation.
   #observeEvent(input$generate_spatial_anim_ppt, {
@@ -1285,13 +1294,12 @@ server <- function(input, output, session) {
                          type = "error", duration = 10) 
       }  
     }
-    
+
     
     # Create a unique data set 'csite' for each Aquifer.
     for (Aq_sel in unique(all_data$sample_loc$data$Aquifer)) {
       
-      pr_dat <- processData(all_data$solute_data, all_data$sample_loc, GWSDAT_Options, 
-                            Aq_sel)
+      pr_dat <- processData(all_data$solute_data, all_data$sample_loc, GWSDAT_Options, Aq_sel)
       
       if (is.null(pr_dat)) next
       
@@ -2420,7 +2428,7 @@ server <- function(input, output, session) {
     if (input$analyse_panel == "Save Session")
       updateTextInput(session, "session_filename", value = paste0("GWSDAT_", gsub(":", "_", gsub(" ", "_", Sys.time())), ".rds"))
     
-    cat('FIXME: Check what this is doing: line 2423.\n')
+    #cat('FIXME: Check what this is doing: line 2423.\n')
     #if (input$analyse_panel == "Options") {
       # Save parameters that might have to be restored later if they are invalid.
       #prev_psplines_resolution <<- input$psplines_resolution
@@ -2906,7 +2914,7 @@ server <- function(input, output, session) {
           # altered csite objects, which are copies, not references).
           csite <<- csite_list[[j]]
           csite_selected_idx <<- j
-
+          
               
           shinyjs::hide("data_select_page")
           shinyjs::show("analyse_page")
@@ -3266,53 +3274,63 @@ server <- function(input, output, session) {
   
   output$welcomeMsg <- shinydashboard::renderMenu({
     
-    # If a user is logged in, greet him with his email.
-    if (user_id$authenticated) {
-      tags$li(class = "dropdown",
-        tags$div(style = 'margin-top: 15px; margin-right: 10px;', 
-                          h4(paste0("Welcome ", user_id$email))))
-    } else {
-      tags$li(class = "dropdown",
+                                        # If a user is logged in, greet him with his email.
+    if (APP_LOGIN_MODE) {
+        if (user_id$authenticated) {
+            tags$li(class = "dropdown",
               tags$div(style = 'margin-top: 15px; margin-right: 10px;', 
-                       h4("This is a temporary session.")))
+                          h4(paste0("Welcome ", user_id$email))))
+        } else {
+            tags$li(class = "dropdown",
+                    tags$div(style = 'margin-top: 15px; margin-right: 10px;', 
+                             h4("This is a temporary session.")))
+        }
+    } else {
+        list()
     }
-    
-    
   })
   
   output$logAction <- shinydashboard::renderMenu({
     
-    # If a user is not logged in, show the 'LOG IN' link.
-    if (!user_id$authenticated) {
-      tags$li(class = "dropdown",
-              tags$div(style = 'margin-top: 15px; margin-right: 10px;', 
-                       tags$a(id = "gotoLogin", h4("LOG IN"), href = "#"))
-      )
-    } else {
-      # .. otherwise show the 'LOG OUT' link.
-      tags$li(class = "dropdown",
-              tags$div(style = 'margin-top: 15px; margin-right: 10px;',
-                       tags$a(id = "doLogout", h4("LOG OUT"), href = "#"))
-      )
+    if (APP_LOGIN_MODE) {
+                                        # If a user is not logged in, show the 'LOG IN' link.
+        if (!user_id$authenticated) {
+            tags$li(class = "dropdown",
+                    tags$div(style = 'margin-top: 15px; margin-right: 10px;', 
+                             tags$a(id = "gotoLogin", h4("LOG IN"), href = "#"))
+                    )
+        } else {
+                                        # .. otherwise show the 'LOG OUT' link.
+            tags$li(class = "dropdown",
+                    tags$div(style = 'margin-top: 15px; margin-right: 10px;',
+                             tags$a(id = "doLogout", h4("LOG OUT"), href = "#"))
+                    )
       
-    }
+        }
+    } else {
+        list()
+    }  
   })
   
   output$signupAction <- shinydashboard::renderMenu({
    
-    # If a user is not logged in, show the 'SIGN UP' link.
-    if (!user_id$authenticated) {
-      tags$li(class = "dropdown",
-              tags$div(style = 'margin-top: 15px; margin-right: 10px;', 
-                       tags$a(id = "gotoSignup", h4("SIGN UP"), href = "#"))
-      )
-    } else {
-      # Use this as a placeholder, will keep the space empty in the state of 
-      # being logged in.
-      tags$li(class = "dropdown",
-              tags$div(style = 'margin-top: 15px; margin-right: 10px;')
-      )
-    } 
+      if (APP_LOGIN_MODE) {
+          # If a user is not logged in, show the 'SIGN UP' link.
+          if (!user_id$authenticated) {
+              tags$li(class = "dropdown",
+                      tags$div(style = 'margin-top: 15px; margin-right: 10px;', 
+                               tags$a(id = "gotoSignup", h4("SIGN UP"), href = "#"))
+                      )
+          } else {
+              # Use this as a placeholder, will keep the space empty in the state of 
+              # being logged in.
+              tags$li(class = "dropdown",
+                      tags$div(style = 'margin-top: 15px; margin-right: 10px;')
+                      )
+          }
+      } else {
+          list()
+      }
   })
   
 } # end server section
