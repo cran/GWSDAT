@@ -188,7 +188,7 @@ plotSpatialImage_main <- function(csite, substance = " ", timepoint = NULL,
     col.palette <- topo.colors(n.col)
     Do.Image<-FALSE
     interp.pred$z[,]<-NA
-    my.palette<-col.palette[(as.numeric(cut(temp.Cont.Data$Result.Corr.ND,breaks=csite$lev_cut)))]
+    my.palette<-col.palette[(as.numeric(cut(temp.Cont.Data$Result.Corr.ND,breaks=lev_cut)))]
     #my.cex<-.5*as.numeric(cut(temp.Cont.Data$Result.Corr.ND,breaks=my.lev_cut))
     #my.cex<-if(csite$ui_attr$conc_unit_selected=="mg/l"){.5*log(1000*temp.Cont.Data$Result.Corr.ND)}else{.8*log(temp.Cont.Data$Result.Corr.ND)}
     
@@ -295,7 +295,7 @@ plotSpatialImage_main <- function(csite, substance = " ", timepoint = NULL,
       tempUnitHandle <- PlumeUnitHandlingFunc(csite$GWSDAT_Options$WellCoordsLengthUnits, csite$ui_attr$conc_unit_selected, plume_stats$mass, plume_stats$area)
       
       tp <- paste("Plume Mass=", signif(tempUnitHandle$PlumeMass,5),tempUnitHandle$PlumeMassUnits,";  Plume Area=",signif(tempUnitHandle$PlumeArea,5),tempUnitHandle$PlumeAreaUnits,sep = "")
-      mtext(tp,side = 1,adj = -0.1, line = 2,cex = 0.85)
+      mtext(tp,side = 1,adj = 0, line = 2,cex = 0.85)
       
     }
     
@@ -340,7 +340,7 @@ plotSpatialImage_main <- function(csite, substance = " ", timepoint = NULL,
       tempUnitHandle <- PlumeUnitHandlingFunc(csite$GWSDAT_Options$WellCoordsLengthUnits,csite$ui_attr$conc_unit_selected,plume_stats$mass,plume_stats$area)
       
         tp <- paste("Plume Mass=",signif(tempUnitHandle$PlumeMass,5),tempUnitHandle$PlumeMassUnits,";  Plume Area=",signif(tempUnitHandle$PlumeArea,5),tempUnitHandle$PlumeAreaUnits,sep = "")
-      mtext(tp,side = 1,adj = -0.1,line = 2, cex = 0.85)
+      mtext(tp,side = 1,adj = 0,line = 2, cex = 0.85)
       
     }
     
@@ -706,5 +706,29 @@ plotFilledContour <- function(x = seq(0, 1, len = nrow(z)), y = seq(0, 1, len = 
     else plot.title
     
 }
+
+
+#' @importFrom raster raster rasterize writeRaster extent
+
+PlotSpatialImageTIF<-function(csite, fileout, substance, timepoint){
+  
+  csite<<-csite
+  fileout<<-fileout
+  substance<<-substance
+  timepoint<<-timepoint
+  print("here")
+  dat<-interpConc(csite,substance,timepoint)$data
+  
+  dat1<-expand.grid(x=dat$x,y=dat$y)
+  dat1$z<-as.numeric(t(dat$z))
+  dat1<-data.frame(x=dat1$x,y=dat1$y,z=dat1$z)
+  r <- raster(extent(dat1[,c("x","y")]), ncol=100, nrow=100)
+  r <- rasterize(dat1[, c("x","y")], r, dat$z, fun=mean)
+  
+  writeRaster(r,fileout,overwrite=TRUE)
+  
+}
+
+
 
 

@@ -1,19 +1,25 @@
 Package: GWSDAT
 Title: GroundWater Spatiotemporal Data Analysis Tool (GWSDAT)
-Version: 3.0.3
-Author: Wayne W Jones <wayne.w.jones@shell.com>, Ludger Evers <ludger.evers@glasgow.ac.uk>, Andrej Aderhold <andrej.aderhold@protonmail.com>
-Maintainer: Ludger Evers <ludger.evers@glasgow.ac.uk>
-Description: Shiny application for the analysis of groundwater monitoring data, designed to work with simple time-series data for solute concentration and ground water elevation, but can also plot non-aqueous phase liquid (NAPL) thickness if required. Also provides the import of a site basemap in GIS shapefile format.
-Depends: R (>= 3.2.2)
-Imports: shiny, shinyjs, shinydashboard, shinycssloaders, sm, zoo,
-        splancs, Kendall, deldir, geometry, Matrix, readxl, MASS,
-        lattice, rhandsontable, officer, sp, sf, digest
-Suggests: DBI, RSQLite
+Version: 3.0.4
+Author: Wayne Jones <wayne.w.jones@shell.com>, Ludger Evers
+    <ludger.evers@glasgow.ac.uk>, Andrej Aderhold
+    <andrej.aderhold@protonmail.com>
+Maintainer: Wayne Jones <wayne.w.jones@shell.com>
+Description: Shiny application for the analysis of groundwater
+    monitoring data, designed to work with simple time-series data for
+    solute concentration and ground water elevation, but can also plot
+    non-aqueous phase liquid (NAPL) thickness if required. Also provides
+    the import of a site basemap in GIS shapefile format.
 License: GPL-3
+Depends: R (>= 3.2.2)
+Imports: deldir, digest, geometry, Kendall, lattice, MASS, Matrix,
+        officer, raster, readxl, rhandsontable, sf, shiny,
+        shinycssloaders, shinydashboard, shinyjs, sm, sp, splancs, zoo
+Suggests: DBI, RSQLite
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2019-02-06 17:25:24 UTC; ludger
+Packaged: 2020-11-05 14:43:51 UTC; wayne.w.jones
 Repository: CRAN
-Date/Publication: 2019-02-06 23:11:28 UTC
+Date/Publication: 2020-11-05 17:30:24 UTC

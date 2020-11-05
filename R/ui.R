@@ -1,3 +1,6 @@
+#' @importFrom utils globalVariables
+globalVariables("APP_CUSTOM_COMPONENT")
+
 # This is the main UI file that defines the two types of interfaces: 
 #  1. uiFull : running on a server with multiple data sets.
 #  2. uiSimple : running  locally on a single data set (a.k.a. 'ExcelMode') 
@@ -36,7 +39,7 @@ uiFull <- function() shinydashboard::dashboardPage(skin = "black",
     shinyjs::useShinyjs(), 
     createLogoCSS(),
     if (exists("APP_CUSTOM_COMPONENT", envir = .GlobalEnv)) 
-        get("APP_CUSTOM_COMPONENT", envir = .GlobalEnv)(),
+        APP_CUSTOM_COMPONENT(),
     
     # Not using includeScript because it wraps <script> tags
     # around which doesn't work with the GA js directives.
@@ -88,7 +91,7 @@ uiFull <- function() shinydashboard::dashboardPage(skin = "black",
 
 
 # Define the Shiny dashboard header
-dbHeaderSimple <- function() shinydashboard::dashboardHeader(title = "GWSDAT.beta",
+dbHeaderSimple <- function() shinydashboard::dashboardHeader(title = "GWSDAT",
     tags$li(a(href = 'http://gwsdat.net',
               icon("home"), title = "GWSDAT Homepage"), class = "dropdown")
 )

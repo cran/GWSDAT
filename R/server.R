@@ -68,7 +68,7 @@ server <- function(input, output, session) {
   renderRHandsonWell <- reactiveVal(0)
   
   # Define supported image formats for saving plots.
-  img_frmt <- list("png", "jpg", "pdf", "ps", "pptx")
+  img_frmt <- list("png", "jpg", "pdf", "ps", "pptx","tif")
         
   # Remove pptx (powerpoint) if no support was found. 
   if (!existsPPT())
@@ -285,9 +285,9 @@ server <- function(input, output, session) {
     
     
     val <- getFullPlumeStats(csite, 
-                             substance = input$solute_select_pd, 
+                             substance = input$solute_select_sp, 
                              plume_thresh = input$plume_thresh_pd,
-                             ground_porosity = (input$ground_porosity_pd / 100),
+                             ground_porosity = (input$ground_porosity / 100),
                              progressBar = progress
                             )
     
@@ -317,7 +317,7 @@ server <- function(input, output, session) {
     
     # Isolate the inputs (so a change in the sidebar does not trigger this fct.)
     isolate(
-     HTML(paste0(tags$b(input$solute_select_pd), 
+     HTML(paste0(tags$b(input$solute_select_sp), 
                  ": Unable to calculate plume statistics for a threshold value of ",
                  "<b>", input$plume_thresh_pd, " ug/l</b>. ",
                  # "Select a different plume threshold and retry.",
@@ -335,7 +335,7 @@ server <- function(input, output, session) {
     # Detect with model fit changed.
     BP_modelfit_done()
     
-    plotPlumeEst(csite, input$solute_select_pd, input$plume_thresh_pd)
+    plotPlumeEst(csite, input$solute_select_sp, input$plume_thresh_pd)
   })
   
   
@@ -703,10 +703,12 @@ server <- function(input, output, session) {
     outp <- pasteAggLimit(csite$ui_attr$timepoints[new_timepoint_idx], csite$GWSDAT_Options$Aggby)
     
     updateSliderInput(session, "timepoint_sp_idx", value = new_timepoint_idx,
-                      min = 1, max = length(csite$ui_attr$timepoints), label = paste0("Time: ", outp), step = 1)
+                      #min = 1, max = length(csite$ui_attr$timepoints), label = paste0("Time: ", outp), step = 1)
+                      min = 1, max = length(csite$ui_attr$timepoints), label ="", step = 1)
     
     updateSliderInput(session, "timepoint_tt_idx", value = new_timepoint_idx,
-                      min = 1, max = length(csite$ui_attr$timepoints), label = paste0("Time: ", outp), step = 1)
+                      #min = 1, max = length(csite$ui_attr$timepoints), label = paste0("Time: ", outp), step = 1)
+                      min = 1, max = length(csite$ui_attr$timepoints), label = "", step = 1)    
     
     
     # Update select input: Aggregation in other panel.
@@ -978,7 +980,8 @@ server <- function(input, output, session) {
         makeTimeSeriesPPT(csite, file, input$solute_select_ts, input$sample_loc_select_ts,
                           width  = input$img_width_px, height = input$img_height_px)
         
-      } else {
+      } 
+      else {
         
         if (input$export_format_ts == "png") png(file, width = input$img_width_px, height = input$img_height_px)
         if (input$export_format_ts == "pdf") pdf(file, width = input$img_width_px / csite$ui_attr$img_ppi, height = input$img_height_px / csite$ui_attr$img_ppi) 
@@ -1005,7 +1008,12 @@ server <- function(input, output, session) {
         plotSpatialImagePPT(csite, file, input$solute_select_sp, as.Date(csite$ui_attr$timepoints[input$timepoint_sp_idx], "%d-%m-%Y"),
                        width  = input$img_width_px, height = input$img_height_px)
       
-        } else {
+        } else if (input$export_format_sp == "tif"){
+         
+          PlotSpatialImageTIF(csite, file, input$solute_select_sp, as.Date(csite$ui_attr$timepoints[input$timepoint_sp_idx], "%d-%m-%Y"))
+          
+        }
+      else {
           
           if (input$export_format_sp == "png") png(file, width = input$img_width_px, height = input$img_height_px)
           if (input$export_format_sp == "pdf") pdf(file, width = input$img_width_px / csite$ui_attr$img_ppi, height = input$img_height_px / csite$ui_attr$img_ppi) 
