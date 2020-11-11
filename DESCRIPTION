@@ -1,6 +1,6 @@
 Package: GWSDAT
 Title: GroundWater Spatiotemporal Data Analysis Tool (GWSDAT)
-Version: 3.0.4
+Version: 3.0.5
 Author: Wayne Jones <wayne.w.jones@shell.com>, Ludger Evers
     <ludger.evers@glasgow.ac.uk>, Andrej Aderhold
     <andrej.aderhold@protonmail.com>
@@ -12,14 +12,14 @@ Description: Shiny application for the analysis of groundwater
     the import of a site basemap in GIS shapefile format.
 License: GPL-3
 Depends: R (>= 3.2.2)
-Imports: deldir, digest, geometry, Kendall, lattice, MASS, Matrix,
-        officer, raster, readxl, rhandsontable, sf, shiny,
+Imports: deldir, digest, geometry, Kendall, lattice, lubridate, MASS,
+        Matrix, officer, raster, readxl, rhandsontable, sf, shiny,
         shinycssloaders, shinydashboard, shinyjs, sm, sp, splancs, zoo
 Suggests: DBI, RSQLite
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2020-11-05 14:43:51 UTC; wayne.w.jones
+Packaged: 2020-11-09 07:37:45 UTC; wayne.w.jones
 Repository: CRAN
-Date/Publication: 2020-11-05 17:30:24 UTC
+Date/Publication: 2020-11-11 07:40:20 UTC

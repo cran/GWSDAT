@@ -1,5 +1,5 @@
-a80b347c823473ed95bcee268bf5c46c *DESCRIPTION
-1fc88dae84d4349a651ae1f308c551a6 *NAMESPACE
+be553077b8798012157b8c8b70c9c971 *DESCRIPTION
+1789e478b71170fd674ca4688fd2f7f2 *NAMESPACE
 b014d0a902da26c497e98cd4c03f4cc5 *R/aggregateData.R
 81919de7b1b0791399f18a4748841150 *R/calcGWFlow.R
 3a27d3dd01c43cf5c0f10aa819fbbc1e *R/calcTrafficLights.R
@@ -22,7 +22,7 @@ fc961672a202d85377f86550e38d301e *R/plotTrendTable.R
 12631ddc79eb31a8d7a3695ef35b13aa *R/ppt.R
 2896c49d05da39d10dd857da1f23cfae *R/predictValues.R
 6c84069500fbaff0a4b2ca977582b65e *R/processData.R
-013ce5b5db3d8e89c53f65809cb2b3bc *R/readData.R
+58c34717b6ee0ca49eb41e5429bde4aa *R/readData.R
 e0cd52906d7f9f5384c5540d276056e1 *R/selectGamma.R
 42407b5daa1a05110969257e8613cc77 *R/server.R
 b1deb9e1cfe921fc53912ae191299f32 *R/shapeFiles.R
@@ -45,6 +45,7 @@ e719bf2ad0756945e5a51ce0ac0b696b *inst/application/jqdb_pspline_fit.R
 f44d35f01026d85b68fec7177d6a1e40 *inst/application/simple_pspline_fit.R
 40a90bf51458fd0dd874b89712b52a50 *inst/extdata/Basic_Example.xlsx
 a93ccdd9d62624371ff3bfa6b493412d *inst/extdata/Comprehensive_Example.xlsx
+b1693c09e78ace9e52381077f855bac6 *inst/extdata/GWSDAT-v4.00.xlam
 a5637442f536a2a2c24b96597911060e *inst/extdata/GWSDAT_Examples.rds
 9e5bedb26494b06c48587ae1acfa7ece *inst/extdata/gwsdat_logo.png
 51e4414a1a8369fff9d68e90a2538622 *inst/www/google-analytics.js
