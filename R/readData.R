@@ -105,8 +105,9 @@ readExcel <- function(filein, sheet = NULL) {
         #
         ret <- readExcelData(filein$datapath, sheet = sheet, header = conc_header)
         
-        if (class(ret) != "data.frame") {
-            showNotification(paste0("Sheet \'", sheet, "\': No valid contaminant table found."), duration = 10, type = "error")
+        #if (class(ret) != "data.frame") {
+        if (!is.data.frame(ret)) {
+            try(showNotification(paste0("Sheet \'", sheet, "\': No valid contaminant table found."), duration = 10, type = "error"))
             next
         }
         
@@ -116,10 +117,10 @@ readExcel <- function(filein, sheet = NULL) {
             ret <- ret[!is.na(ret$SampleDate),]
             
             msg <- paste0("Sheet \'", sheet, "\': Incorrect input date value(s) detected. Ommitting values.")
-            showNotification(msg, type = "warning", duration = 10)
+            try(showNotification(msg, type = "warning", duration = 10))
             
             if (nrow(ret) == 0) {
-                showNotification(paste0("Sheet \'", sheet, "\': Zero entries in concentration data read, skipping."), type = "error", duration = 10)
+                try(showNotification(paste0("Sheet \'", sheet, "\': Zero entries in concentration data read, skipping."), type = "error", duration = 10))
                 next
             } 
         }
@@ -139,7 +140,8 @@ readExcel <- function(filein, sheet = NULL) {
         well_data <- readExcelData(filein$datapath, sheet = sheet, header = well_header, 
                              ign_first_head = "WellName")
         
-        if (class(well_data) != "data.frame") {
+        #if (class(well_data) != "data.frame") {
+        if (!is.data.frame(well_data)) {
             showNotification(paste0("Sheet \'", sheet, "\': No valid well table found, skipping."), duration = 10)
             next
         }
@@ -174,7 +176,7 @@ readExcel <- function(filein, sheet = NULL) {
         
 
         # If we made it until here, we were able to read some valid data. 
-        showNotification(paste0("Sheet \'", sheet, "\': Found valid tables."), type = "message", duration = 10)
+        try(showNotification(paste0("Sheet \'", sheet, "\': Found valid tables."), type = "message", duration = 10))
         break
     }
     
@@ -224,7 +226,8 @@ readConcData <- function(input_file, valid_header, ...) {
   }
    
   # Transform the 'SampleDate' column into 'Date' class.  
-  if (class(DF$SampleDate) == "numeric" | class(DF$SampleDate) == "integer")
+  #if (class(DF$SampleDate) == "numeric" | class(DF$SampleDate) == "integer")
+  if (is.numeric(DF$SampleDate) | is.integer(DF$SampleDate))
     # An integer value indicates Excel time. This is _not_ Unix time!
     DF$SampleDate <- excelDate2Date(floor(as.numeric(as.character(DF$SampleDate)))) 
   else

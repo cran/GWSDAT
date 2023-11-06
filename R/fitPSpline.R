@@ -116,8 +116,7 @@ GWSDAT.compute.map.coef <- function(B, DtD, y, ig.a=1e-3, ig.b=1e-3, lambdas, pr
 
 }
 
-tunePSplines <- function(ContData, NIG.a, NIG.b, nseg, 
-                         pord, bdeg, Trial.Lambda, verbose = FALSE) {
+tunePSplines <- function(ContData, NIG.a, NIG.b, nseg, pord, bdeg, Trial.Lambda, verbose = FALSE) {
 
 
   # Prepare Data  
@@ -134,11 +133,36 @@ tunePSplines <- function(ContData, NIG.a, NIG.b, nseg,
   Y <- model.response(model.frame(form, ContData))
 
 
-  mat <- GWSDAT.st.matrices(X, xrange = t(apply(X, 2, range)), ndims = 3, 
-                            nseg = rep(nseg,3), pord = pord, bdeg = bdeg)
+  mat <- GWSDAT.st.matrices(X, xrange = t(apply(X, 2, range)), ndims = 3, nseg = rep(nseg,3), pord = pord, bdeg = bdeg)
   
-  BestModel <- GWSDAT.compute.map.coef(mat$B, mat$P, Y, lambdas = Trial.Lambda, 
-                                       ig.a = NIG.a, ig.b = NIG.b, prior = GWSDAT.Prior)
+  
+  BestModel <- GWSDAT.compute.map.coef(mat$B, mat$P, Y, lambdas = Trial.Lambda, ig.a = NIG.a, ig.b = NIG.b, prior = GWSDAT.Prior)
+  
+  if(TRUE){ ##Calculate Imetrics - introduced in GWSDAT version 3.2
+    
+    B      <- mat$B
+    P      <- mat$P
+    
+    # computing Hat matrix
+    hatmat <- B %*% solve((t(B) %*% B + BestModel$best.lambda * P)) %*% t(B)
+    df <- sum(diag(hatmat))     # effective degrees of freedom
+   
+    
+    Imetrics <- data.frame(Constituent=ContData$Constituent,WellName =ContData$WellName,SampleDate=ContData$AggDate, leverage=diag(hatmat),residual=Y-BestModel$fitted)
+    N <- nrow(Imetrics)        # number of observations 
+    
+
+    # calculate standard error of residuals
+    RSE <- sqrt(sum(Imetrics$residual^2)/(N-df))
+    
+    # calculate standardized residuals and add to results
+    Imetrics$standresid = Imetrics$residual/(RSE*sqrt(1-Imetrics$leverage))
+    Imetrics$cd<-(1/df)*(Imetrics$standresid^2)*(Imetrics$leverage/(1-Imetrics$leverage))
+    Imetrics$covratio<- 1/(((((N-df-1)/(N-df))+((Imetrics$standresid^2)/(N-df)))^df)*(1-Imetrics$leverage))
+    ImetricsByWellSummary<-aggregate(cd~Constituent+WellName,Imetrics,mean)
+    ImetricsByWellSummary<-ImetricsByWellSummary[order(ImetricsByWellSummary$cd,decreasing = F),]
+  }
+  
   
   if (verbose) {
   
@@ -159,7 +183,8 @@ tunePSplines <- function(ContData, NIG.a, NIG.b, nseg,
                      scale = scale,
                      center = center,
                      alpha = BestModel$alpha,
-                     fitted = BestModel$fitted)
+                     fitted = BestModel$fitted,
+                     Imetrics=list(Imetrics=Imetrics,ImetricsByWellSummary=ImetricsByWellSummary,Wellorder=as.character(ImetricsByWellSummary$WellName)))
 
   ##Alternative for SEs
   #best.model<-list(
@@ -174,6 +199,7 @@ tunePSplines <- function(ContData, NIG.a, NIG.b, nseg,
   
   return(Model.tune)
 }
+
 
 
 
@@ -216,17 +242,18 @@ fitPSplines <- function(ContData, params){
 
 }
 
-
-predict.GWSDAT.PSpline <- function(mod,newdata,se=FALSE) {
-
+#' @export
+#predict.GWSDAT.PSpline <- function(mod,newdata,se=FALSE) {
+predict.GWSDAT.PSpline <- function(object,newdata,se=FALSE,...) {
+  
   X <- model.matrix(~XCoord+YCoord+AggDate-1,newdata)
-  X <- sweep(X, 2L, mod$center)
-  X <- sweep(X, 2L, mod$scale, "/")
+  X <- sweep(X, 2L, object$center)
+  X <- sweep(X, 2L, object$scale, "/")
   
   
-  mat <- GWSDAT.st.matrices(x = X, xrange = mod$xrange, ndims = mod$ndims,
-                            nseg = rep(mod$nseg,mod$ndims), bdeg = mod$bdeg, 
-                            pord = mod$pord, computeP = FALSE)
+  mat <- GWSDAT.st.matrices(x = X, xrange = object$xrange, ndims = object$ndims,
+                            nseg = rep(object$nseg,object$ndims), bdeg = object$bdeg, 
+                            pord = object$pord, computeP = FALSE)
   B <- mat$B
   
   result <- list(predicted.sd = rep(NA,nrow(B)))
@@ -234,19 +261,19 @@ predict.GWSDAT.PSpline <- function(mod,newdata,se=FALSE) {
   
   if (se) {
   
-    post.ig.a <- mod$post.ig.a
-    post.ig.b <- mod$post.ig.b
+    post.ig.a <- object$post.ig.a
+    post.ig.b <- object$post.ig.b
   
     if (post.ig.a <= 2) {
       result$predicted.sd <- rep(Inf, nrow(B))
     } else {
-  	  result$predicted.sd <- sqrt((post.ig.b / (post.ig.a-2)) * ((B%*%mod$Xtinv)^2  %*% (1 / (mod$d + mod$Lambda * mod$e))))
+  	  result$predicted.sd <- sqrt((post.ig.b / (post.ig.a-2)) * ((B%*%object$Xtinv)^2  %*% (1 / (object$d + object$Lambda * object$e))))
     }
   	
   	result$predicted.sd <- drop(result$predicted.sd)
   }
 
-  result$predicted <- as.numeric(B %*% mod$alpha)
+  result$predicted <- as.numeric(B %*% object$alpha)
   return(result)
 }
 

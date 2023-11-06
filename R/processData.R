@@ -25,8 +25,9 @@ formatData <- function(solute_data, sample_loc) {
   solute_data$Flags[is.na(solute_data$Flags)] = ""
   solute_data <- solute_data[tolower(as.character(solute_data$Flags)) != "omit",]
   
-  if (class(solute_data$SampleDate) == "integer") {
-    
+  #if (class(solute_data$SampleDate) == "integer") {
+  if (is.integer(solute_data$SampleDate)) {
+      
     solute_data$SampleDate <- excelDate2Date(solute_data$SampleDate) 
     
   #} else if (class(solute_data$SampleDate)[1] %in% c("POSIXct", "POSIXt")) {
@@ -347,7 +348,8 @@ processData <- function(solute_data, sample_loc, GWSDAT_Options,
 
           # "NAPL Data Conflict"        
           # msg <- "Concentration data reported in presence of NAPL. Do you wish to use concentration data (Yes) or substitue these NAPL values with maximum observed solute concentrations (No)?\nNote: NAPL measurements for electron acceptor, Redox or 'NotInNapl' flagged constituents will be ignored."
-          msg <- "Concentration data reported in presence of NAPL. Use it? (Yes/No choice will soon be supported)"
+          #msg <- "Concentration data reported in presence of NAPL. Use it? (Yes/No choice will soon be supported)"
+          msg<-  "Concentration data reported in presence of NAPL. For these specific data points, adopting reported concentration values rather than performing NAPL substitution with max observed values."
           showNotification(msg, type = "warning", duration = 10)  
         }
         
