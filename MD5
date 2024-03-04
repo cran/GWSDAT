@@ -1,10 +1,10 @@
-1e3a73d6ab075639d0f341343084df5f *DESCRIPTION
+913d2d75ca69973cbed225c3f44dbf66 *DESCRIPTION
 7c27a51d8ae64d255dc4d8d270440bac *NAMESPACE
-66bc0a4fda20c26a5554e6e45989a81b *NEWS.md
+0c181a0e035a893bbf8b3ed102fe38da *NEWS.md
 86bac9ebe14811c2f1e158ed3e1d9c6f *R/WellRedundancyUtils.R
 d9a81abdb5fc8816abfec0926082a067 *R/aggregateData.R
 e54f4772ec931772b3901fac3f053988 *R/calcGWFlow.R
-3a27d3dd01c43cf5c0f10aa819fbbc1e *R/calcTrafficLights.R
+328919cf2f7077f88c34c19f4ee59079 *R/calcTrafficLights.R
 18bae71130f8714dbdfe753c018c38ea *R/createOptions.R
 dcd6cb273231e5d113fd689b90960f5a *R/fitData.R
 51b321ea42dad8de6f3c878c0dff6593 *R/fitPSpline.R
@@ -33,7 +33,7 @@ a36034556902e44eec060821f8c1892c *R/uiAnalyse.R
 154adbbab4a17cd5f8fbe1ebb4dbecd2 *R/uiAnalyseOptions.R
 5eceb9ebc90c5386c2c308c27291e1f5 *R/uiAttr.R
 befec654816d04ddefaf6c9719148ee1 *R/uiCustomColourKey.R
-daca8406fab1892fb43540820fbbe5c5 *R/uiDataManager.R
+33ded5286e85d3dea7d13cc94330c3e2 *R/uiDataManager.R
 413a8094435f79643bf77c5ee9abe603 *R/uiLogsJobs.R
 a10d78fa8ab7fca19351b2a9ee33ae66 *R/uiPlumeDiagnostics.R
 cea4893e0a3a3910728d81ec01bc52dd *R/uiSTPredictions.R
@@ -54,7 +54,7 @@ aaa962d68bc7540503846d9c5bea32ff *inst/extdata/Basic_Example.xlsx
 a9c1ce28be0b28b7ecefd07c4471a76b *inst/extdata/Comprehensive_Example.xlsx
 e7aca7c95c786b6297fbdb461cebc0e9 *inst/extdata/GWSDAT-v3.10.xlam
 c8a41755481a017d0a85f57812aa11b1 *inst/extdata/GWSDAT-v3.12.xlam
-58e3c0c705204b001942788f0c673fa7 *inst/extdata/GWSDAT-v3.20.xlam
+97453c00b53c3e2c4eb902b99d79e45d *inst/extdata/GWSDAT-v3.20.xlam
 75d973223921b9b09e38a6faaa4797b2 *inst/extdata/GWSDAT_Basic_Example.rds
 f8b743de12fe6b97f44f6489b34b7b0c *inst/extdata/GWSDAT_Example.rds
 0889c08d8c820a231eb35ab5539016ab *inst/extdata/GWSDAT_Examples.rds

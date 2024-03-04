@@ -1,6 +1,6 @@
 Package: GWSDAT
 Title: GroundWater Spatiotemporal Data Analysis Tool (GWSDAT)
-Version: 3.2.0
+Version: 3.2.1
 Author: Wayne Jones <wayne.w.jones@shell.com>, Ludger Evers
     <ludger.evers@glasgow.ac.uk>, Andrej Aderhold
     <andrej.aderhold@protonmail.com>
@@ -20,6 +20,6 @@ Suggests: DBI, RSQLite
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-11-06 08:06:31 UTC; Wayne.W.Jones
+Packaged: 2024-03-04 10:28:04 UTC; Wayne.W.Jones
 Repository: CRAN
-Date/Publication: 2023-11-06 08:30:03 UTC
+Date/Publication: 2024-03-04 11:50:03 UTC
